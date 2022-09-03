@@ -4,6 +4,7 @@ import (
 	"context"
 	"simpleserver/entities"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	opts "go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -33,15 +34,32 @@ func (mr MongoUserRepository)AddMany(users ...entities.User) error {
 }
 
 func (mr MongoUserRepository)GetMany(ids ...int) []entities.User {
-	return []entities.User{}
+	var arr []entities.User
+	for _, v := range ids {
+		var cur, _ = mr.collection.Find(context.TODO(), bson.D{{}})
+		cur.
+	}
+
 }
 
-func (mr MongoUserRepository)UpdateMany(users ...entities.User) {
-	
+func (mr MongoUserRepository)UpdateMany(users ...entities.User) error {
+	for _, v := range users {
+		var _, err = mr.collection.ReplaceOne(context.TODO(), bson.D{{Key: "_id", Value: v.Id}}, bson.D{{Key: "name", Value: v.Name}})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func (mr MongoUserRepository)DeleteMany(ids ...int) {
-
+func (mr MongoUserRepository)DeleteMany(ids ...int) error {
+	for _, v := range ids {
+		var _, err = mr.collection.DeleteOne(context.TODO(), bson.D{{Key: "_id", Value: v}})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (mr MongoUserRepository)DeleteAll() error {

@@ -9,6 +9,7 @@ import (
 	mongorepository "simpleserver/mongo_repository"
 
 	"github.com/joho/godotenv"
+	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
 )
 
@@ -92,9 +93,10 @@ func main() {
 	getEnv(&options)
 
 	var rep = mongorepository.NewMongoUserRepository(options)
-
-	rep.AddMany(entities.User{Id: 12, Name: "igor'"})
-	// rep.DeleteAll()
+	
+	rep.AddMany(entities.User{Id: 11, Name: "igor'"})
+	// rep.UpdateMany([]entities.User{{Name: "egoridze", Id: 13}, {Id: 14, Name: "forteneer"}}...)
+	rep.DeleteMany([]int{14}...)
 
 	return
 	defer errHandler()
