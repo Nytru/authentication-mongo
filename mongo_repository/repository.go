@@ -37,11 +37,7 @@ func (mr MongoUserRepository)GetMany(ids ...int) []entities.User {
 }
 
 func (mr MongoUserRepository)UpdateMany(users ...entities.User) {
-	for _, v := range users {
-		
-	}
-	mongo.
-	mr.collection.
+	
 }
 
 func (mr MongoUserRepository)DeleteMany(ids ...int) {
