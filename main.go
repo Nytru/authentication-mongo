@@ -2,15 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"os"
 	"simpleserver/entities"
-	mongorepository "simpleserver/mongo_repository"
-
-	"github.com/joho/godotenv"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
-	"go.uber.org/zap"
 )
 
 var logger *zap.Logger
@@ -34,81 +31,59 @@ func init() {
 }
 
 func greet(w http.ResponseWriter, r *http.Request) {
-	var file, err = os.Open("pages/test_page.html")
-	defer file.Close()
-
-	if err != nil {
-		panic(err)
-	}
-	io.Copy(w, file)
+	var page = getPage("pages/test_page.html")
+	io.Copy(w, page)
 }
 
 func auth(w http.ResponseWriter, r *http.Request) {
-	var file, err = os.Open("pages/test_auth_page.html")
-	defer file.Close()
-	if err != nil {
-		panic(err)
-	}
-	io.Copy(w, file)
+	var page = getPage("pages/test_auth_page.html")
+	io.Copy(w, page)
 }
 
 func reg(w http.ResponseWriter, r *http.Request) {
-	var file, err = os.Open("pages/test_reg_page.html")
-	defer file.Close()
-	if err != nil {
-		panic(err)
-	}
-	io.Copy(w, file)
+	var page = getPage("pages/test_reg_page.html")
+	io.Copy(w, page)
 }
 
 func license(w http.ResponseWriter, r *http.Request) {
-	var file, _ = os.Open("pages/license.html")
-	defer file.Close()
-	io.Copy(w, file)
+	var page = getPage("pages/license.html")
+	io.Copy(w, page)
+}
+
+func info(w http.ResponseWriter, r *http.Request) {
+	var page = getPage("pages/test_greet_page.html")
+	io.Copy(w, page)
+}
+
+func selphone(w http.ResponseWriter, r *http.Request) {
+	var page = getPage("pages/test_selphone_page.html")
+	io.Copy(w, page)
 }
 
 func server(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		w.Write([]byte("hello"))
+		var ac = entities.NewAccessProvider()
+		w.Write([]byte(fmt.Sprint(ac)))
 	}
 	w.WriteHeader(http.StatusNotFound)
 }
 
-func getEnv(options *mongorepository.MongoConnectionOptions) {
-	if v, ok := os.LookupEnv("MONGO_FULL_PASS"); ok {
-		options.Connection_string = v
-	}
-
-	if v, ok := os.LookupEnv("DB_NAME"); ok {
-		options.Database_Name = v
-	}
-
-	if v, ok := os.LookupEnv("COLLECTION_NAME"); ok {
-		options.Collection_Name = v
-	}
+func initHandlers() {
+	http.HandleFunc("/", greet)
+	http.HandleFunc("/login", auth)
+	http.HandleFunc("/reg", reg)
+	http.HandleFunc("/license", license)
+	http.HandleFunc("/info", info)
+	http.HandleFunc("/check", server)
 }
 
 func main() {
-	var options = mongorepository.MongoConnectionOptions{}
-	getEnv(&options)
-
-	var rep = mongorepository.NewMongoUserRepository(options)
-	
-	rep.AddMany(entities.User{Id: 11, Name: "igor'"})
-	// rep.UpdateMany([]entities.User{{Name: "egoridze", Id: 13}, {Id: 14, Name: "forteneer"}}...)
-	rep.DeleteMany([]int{14}...)
-
-	return
+	logger.Info("Got envs")
 	defer errHandler()
-	http.HandleFunc("/", greet)
-	http.HandleFunc("/login", auth)	
-	http.HandleFunc("/reg", reg)
-	http.HandleFunc("/license", license)
-
-	http.HandleFunc("/chek", server)
+	initHandlers()
 
 	logger.Info("Server started")
-	http.ListenAndServe(":8080", nil)
+	_ = http.ListenAndServe(":8080", nil)
 }
 
 func errHandler() {
@@ -117,4 +92,13 @@ func errHandler() {
 	} else {
 		logger.Info("Exit with no errors")
 	}
+}
+
+func getPage(adr string) io.Reader {
+	var file, err = os.Open(adr)
+	defer file.Close()
+	if err != nil {
+		return nil
+	}
+	return file
 }

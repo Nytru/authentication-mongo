@@ -1,8 +1,6 @@
 package entities
-
-// import "go.mongodb.org/mongo-driver/bson/primitive"
-
-type User struct {
+//FIXME: remove
+type User struct {//TODO: add support
 	Name string `bson:"name"`
-	Id   int `bson:"_id"`
+	Id   int    `bson:"_id"`
 }
