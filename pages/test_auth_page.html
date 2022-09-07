@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <title>Auth</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -81,15 +81,27 @@ span.psw {
 
   <div class="container">
     <!-- <label for="uname"><b>Username</b></label> -->
-    <input type="text" placeholder="Enter Username" name="uname" required>
+    <label>
+      <input type="text" placeholder="Enter Username" name="uname" required>
+    </label>
 
     <!-- <label for="psw"><b>Password</b></label> -->
-    <input type="password" placeholder="Enter Password" name="psw" required>
-        
-    <button type="submit">Login</button>
     <label>
-      <!-- <input type="checkbox" checked="checked" name="remember"> Remember me -->
+      <input type="password" placeholder="Enter Password" name="psw" required>
     </label>
+
+    <button type="button" onclick="sendData()">Login</button>
+    <script>
+      function sendData(data) {
+        console.log("get")
+        let req = new XMLHttpRequest()
+        req.open("POST", "/check")
+        req.setRequestHeader("Password", "asdzxcaeqw45312")
+        req.setRequestHeader("Login", "Serega")
+        req.send()
+        console.log("send")
+      }
+    </script>
   </div>
 
   <div class="container" style="background-color:#f1f1f1">

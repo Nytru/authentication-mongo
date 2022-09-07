@@ -45,6 +45,20 @@ func (mr mongoUserRepository) GetMany(ids ...int) []User {
 	return arr
 }
 
+func (mr mongoUserRepository) GetManyLogins(logins ...string) []User {
+	var arr []User
+	for _, v := range logins {
+		var user User
+		var cur = mr.collection.FindOne(context.TODO(), bson.D{{Key: "name", Value: v}})
+		var err = cur.Decode(&user)
+		if err != nil {
+			return nil
+		}
+		arr = append(arr, user)
+	}
+	return arr
+}
+
 func (mr mongoUserRepository) GetAll() []User {
 	var arr []User
 	var cur, _ = mr.collection.Find(context.TODO(), bson.D{})
@@ -54,7 +68,7 @@ func (mr mongoUserRepository) GetAll() []User {
 
 func (mr mongoUserRepository) UpdateMany(users ...User) error {
 	for _, v := range users {
-		var _, err = mr.collection.ReplaceOne(context.TODO(), bson.D{{Key: "_id", Value: v.Id}}, bson.D{{Key: "name", Value: v.Name}})
+		var _, err = mr.collection.ReplaceOne(context.TODO(), bson.D{{Key: "_id", Value: v.Id}}, v) // bson.D{{Key: "name", Value: v.Name}}
 		if err != nil {
 			return err
 		}
